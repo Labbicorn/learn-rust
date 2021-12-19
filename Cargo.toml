@@ -1,0 +1,14 @@
+[package]
+name = "learn-rust"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "example"
+path = "./bin/example.rs"
+
+[workspace]
+member = [
+    "httpie",
+    "scrape_url",
+]

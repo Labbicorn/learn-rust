@@ -136,10 +136,11 @@ fn print_body(m: Option<Mime>, body: &str) {
     match m {
         // 对于 "application/json" 我们pretty print
         Some(v) if v == mime::APPLICATION_JSON => {
-            println!("{}", jsonxf::pretty_print(body).unwrap().cyan())
+            display_html_content(body, "json");
+            // println!("{}", jsonxf::pretty_print(body).unwrap().cyan())
         }
         // 其它 mime type 直接输出
-        _ => println!("{}", body),
+        _ => print!("{}", body),
     }
 }
 
@@ -162,6 +163,25 @@ fn get_content_type(resp: &Response) -> Option<Mime> {
         .map(|v| v.to_str().unwrap().parse().unwrap())
 }
 
+fn display_html_content(value: &str, ext:  &str) {
+    use syntect::easy::HighlightLines;
+    use syntect::highlighting::{Style, ThemeSet};
+    use syntect::parsing::SyntaxSet;
+    use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
+
+    // Load these once at the start of your program
+    let ps = SyntaxSet::load_defaults_newlines();
+    let ts = ThemeSet::load_defaults();
+
+    let syntax = ps.find_syntax_by_extension(ext).unwrap();
+    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
+    let s = value;
+    for line in LinesWithEndings::from(s) {
+        let ranges: Vec<(Style, &str)> = h.highlight(line, &ps);
+        let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
+        println!("{}", escaped);
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
