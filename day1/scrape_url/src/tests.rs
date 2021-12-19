@@ -1,4 +1,3 @@
-use std::f64::consts::E;
 
 fn apply(value: i32, f: fn(i32) -> i32) -> i32 {
     f(value)
